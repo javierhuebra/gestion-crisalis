@@ -1,88 +1,72 @@
-import { showNotification } from "../components/ToastNotification";
+import { HTTPMethod, useFetch } from "../hooks/useFetch";
 import { PersonasType } from "./../components/types/personType";
 
-let personas: PersonasType[] = [];
+const URL_API_PERSONAS = "http://localhost:8080/api/personas";
 
-export const fetchPersonas = async (
-  setIsLoadingCallback: React.Dispatch<React.SetStateAction<boolean>>
+export const useFetchPersonas = (
+  id?: number,
+  shouldExecute: boolean = false
 ) => {
-  try {
-    // You can use a loading mechanism here, similar to triggerLoading
-    const response = await fetch("jsons/personJson.json");
-    const data = await response.json();
-    personas = data; // Updates the personas array
-    // Stop loading mechanism here
-    return data;
-  } catch (error) {
-    console.error(`An error occurred: ${error}`);
-    throw error;
-  }
+  return useFetch(
+    {
+      method: HTTPMethod.GET,
+      url: `${URL_API_PERSONAS}${id && id >= 0 ? `/${id}` : ""}`,
+      params: {},
+    },
+    shouldExecute
+  );
 };
 
-export const selectAll = (): PersonasType[] => {
-  return personas;
+export const useCreatePersonas = (
+  overrides: Partial<PersonasType> = {},
+  shouldExecute = false
+) => {
+  const params = {
+    id: overrides.id,
+    nombre: overrides.nombre,
+    apellido: overrides.apellido,
+    dni: Number(overrides.dni),
+    eliminado: overrides.eliminado,
+  };
+
+  return useFetch(
+    {
+      method: HTTPMethod.POST,
+      url: `${URL_API_PERSONAS}`,
+      params: params,
+    },
+    shouldExecute
+  );
 };
 
-export function createPersona(overrides: Partial<PersonasType> = {}) {
-  const defaults: PersonasType = {
-    id: 0,
-    firstName: "",
-    lastName: "",
-    dni: "",
+export const useModifyPersonas = (
+  updatedData: Partial<PersonasType>,
+  shouldExecute = false
+) => {
+  const params = {
+    id: updatedData.id,
+    nombre: updatedData.nombre,
+    apellido: updatedData.apellido,
+    dni: Number(updatedData.dni),
+    eliminado: updatedData.eliminado,
   };
+  return useFetch(
+    {
+      method: HTTPMethod.POST,
+      url: `${URL_API_PERSONAS}/${updatedData.id}`,
+      params: params,
+    },
+    shouldExecute
+  );
+};
 
-  const combined = { ...defaults, ...overrides };
-  personas.push(combined);
-  showNotification("add", "Creacion exitosa", "Nueva persona creada", true);
-}
-
-export function modifyPersona(id: number, updatedData: Partial<PersonasType>) {
-  const indexToModify = personas.findIndex((item) => item.id === id);
-  if (indexToModify === -1) {
-    console.error(`Item with id ${id} not found.`);
-    return;
-  }
-
-  const itemToModify = personas[indexToModify];
-  const updatedItem = { ...itemToModify, ...updatedData };
-  personas[indexToModify] = updatedItem;
-  showNotification("edit", "Modificacion exitosa", "Persona modificada", true);
-}
-
-export function deletePersona(id: number) {
-  const indexToDelete = personas.findIndex((item) => item.id === id);
-  if (indexToDelete === -1) {
-    console.error(`Item with id ${id} not found.`);
-    return;
-  }
-  personas.splice(indexToDelete, 1);
-  showNotification("delete", "Borrado exitoso", "Persona borrada", true);
-}
-
-export function countPersonas(): number {
-  return personas.length;
-}
-
-export function getNextID() {
-  const maxID = Math.max(...personas.map((persona) => persona.id));
-  return maxID + 1;
-}
-
-export function createPersonaDefaultValues(): PersonasType {
-  return {
-    id: 0,
-    firstName: "",
-    lastName: "",
-    dni: "",
-  };
-}
-
-export function findPersonaById(id: number): PersonasType | null {
-  const foundItem = personas.find((item) => item.id === id);
-  return foundItem ? foundItem : null;
-}
-
-export function findPersonaByDNI(dni: string): PersonasType | null {
-  const foundItem = personas.find((item) => item.dni === dni);
-  return foundItem ? foundItem : null;
-}
+export const useDeletePersonas = (id?: number, shouldExecute = false) => {
+  return useFetch(
+    {
+      method: HTTPMethod.PATCH,
+      url: `${URL_API_PERSONAS}/${id}`,
+      params: {},
+    },
+    shouldExecute
+  );
+};

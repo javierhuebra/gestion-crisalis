@@ -1,12 +1,41 @@
+import { ImpuestosType } from "./taxType";
+
 export enum ProductOrService {
-  Producto = "Producto",
-  Servicio = "Servicio",
+  Producto = "PRODUCTO",
+  Servicio = "SERVICIO",
 }
 
 export type ProductServiceType = {
   id: number;
-  name: string;
-  type: ProductOrService;
-  cost: number;
-  support: number;
+  nombre: string;
+  tipo: ProductOrService;
+  costo: number;
+  impuestos: ImpuestosType[];
+  soporte: number | null;
+  cantidad: number;
+  garantia: number | null;
+  idImpuestos: number[];
+  eliminado: boolean;
+
+  descuento: number | null;
+  garantiaCosto: number | null;
+  impuesto: number;
+};
+
+
+export const defaultProductServiceValues: ProductServiceType = {
+  id: -1,
+  nombre: "",
+  tipo: ProductOrService.Producto,
+  costo: 0,
+  soporte: null,
+  impuestos: [],
+  cantidad: 1,
+  garantia: null,
+  idImpuestos: [],
+  eliminado: false,
+
+  descuento: null,
+  garantiaCosto: null,
+  impuesto: 0
 };

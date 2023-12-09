@@ -1,6 +1,15 @@
 export type PersonasType = {
   id: number;
-  firstName: string;
-  lastName: string;
+  nombre: string;
+  apellido: string;
   dni: string;
+  eliminado: boolean;
+};
+
+export const defaultPersonasType = {
+  id: -1,
+  nombre: "",
+  apellido: "",
+  dni: "",
+  eliminado: false,
 };
